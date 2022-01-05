@@ -18,14 +18,30 @@ export async function main(ns) {
             const values = [];
             // Add script income per second
             headers.push("ScrInc");
-            values.push(ns.getScriptIncome()[0].toPrecision(5) + '/sec');
+
+            var income = ns.getScriptIncome()[0];
+            var sIncome;
+
+            // Divide by multiplier of thousands, millions, billions, ... 
+            switch (true) {
+                case (income > Math.pow(10, 9)):
+                    sIncome = income.toPrecision(3) / Math.pow(10, 9) + 'b';
+                    break;
+                case (income > Math.pow(10, 6)):
+                    sIncome = income.toPrecision(3) / Math.pow(10, 6) + 'm';
+                    break;
+                case (income > 1000):
+                    sIncome = income.toPrecision(3) / 1000 + 'k';
+            }
+
+            values.push(sIncome + '/s');
             // Add script exp gain rate per second
             headers.push("ScrExp");
-            values.push(ns.getScriptExpGain().toPrecision(5) + '/sec');
+            values.push(ns.getScriptExpGain().toPrecision(3) + '/s');
             // TODO: Add more neat stuff
 
             // Now drop it into the placeholder elements
-            hook0.innerText = headers.join(" \n");
+            hook0.innerText = headers.join(" \n");
             hook1.innerText = values.join("\n");
         } catch (err) { // This might come in handy later
             ns.print("ERROR: Update Skipped: " + String(err));
